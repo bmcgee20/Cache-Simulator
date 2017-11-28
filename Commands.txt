@@ -1,0 +1,2 @@
+./cachesim set ./trace_for_students/trace.stream_10
+gcc cachesim.c -o cachesim
