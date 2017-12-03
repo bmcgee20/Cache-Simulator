@@ -195,45 +195,52 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
 
 	//push all bits out except the tag
 	uint64_t tagNum = (address>>(32-tagSize));
-
-	//this got us the block address
-	uint64_t newAddress = address >> offsetSize;
-    //should be zero in a direct cache case
-	printf("new address %d",newAddress);
-
-    uint64_t setIndexNum = newAddress%((uint64_t)pow(2,NUM_SETS));
     uint64_t blockOffset  = address%BLOCK_SIZE;
     uint64_t blockAddress = address/BLOCK_SIZE;
-    printf("\n%d\n",blockAddress);
-
     uint64_t SetIndex = blockAddress%NUM_SETS;
-    printf("\n%d\n",setIndexNum);
 
 #ifdef DBG
     printf("Address: %d\n",address);
     printf("Tag: %d\n",tagNum);
     printf("Set: %d\n",SetIndex);
     printf("block: %d\n",blockAddress);
-    printf("Memory address: %d, Tag: %d, Set Index: %d Block Address: %d\n", address, tagNum, SetIndex,blockAddress);
-
     #endif
     printf("\nNumber of sets: %d\n", NUM_SETS);
-    /*
+
     //calculate if it hits or not and print if it does
-    if (cache->valid_field[setIndexNum] && cache->tag_field[setIndexNum] == tagNum) { //cache hit
-        cache->hits += 1;
-#ifdef DBG
-        printf("Hit!\n");
-#endif
-    } else {
-        // Cache miss
-        cache->misses += 1;
-#ifdef DBG
-        printf("Miss!\n");
-#endif
-        cache->tag_field[setIndexNum] = tag;
-        cache->valid_field[setIndexNum] = 1;
+    int j;
+    int i;
+    int hit = 0;
+    //look in that set and check if any are the same tags
+    for(j=0;j<= NUM_SETS; j++){
+    	for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
+    		if(cache->tag_field[j,i]== tagNum && cache->valid_field[j,i]==1){
+    			printf("Hit!\n");
+    			cache->hits +=1;
+    		}
+    	}
     }
-    */
+    //we did not find a match for it last time
+    if(hit==0){
+    	cache->misses+=1;
+    	printf("Miss!\n");
+      //now use NRU to place it somewhere
+    	//Used to signal if all NRU are 1 or not
+    	int didReplace = 0;
+        for(j=0;j<= NUM_SETS; j++){
+        	for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
+        		if(cache->NRU_field[j,i]== 0){
+        			//can replace here so do so
+        			didReplace = 1;
+        			cache->tag_field[j,i] = tagNum;
+        			cache->valid_field[j,i] = 1;
+        		}
+        	}
+        }
+        //so no blocks has 0 NRU
+        if(didReplace==0){
+        	//clear them all to 0
+        }
+    }
 }
 
