@@ -99,6 +99,50 @@ int main(int argc, char *argv[])
             address = convert_address(mem_request);
             set_mapped_cache_access(&s_cache, address);
     	}
+        //PRINT OUT HIT AND MISS RATES
+        if(s_cache.hits ==0){
+    		printf("Cache Miss Rate: 1.000\n");
+    		printf("Cache Hit Rate:  0.000\n");
+        }
+        else if(s_cache.misses==0){
+    		printf("Cache Miss Rate: 0.000\n");
+    		printf("Cache Hit Rate:  1.000\n");
+        }
+        else{
+    		float missChance =((float) s_cache.misses/(s_cache.hits+s_cache.misses));
+    		float hitChance = 1 - missChance;
+    		printf("Hit Rate:  %.3f\n", hitChance);
+    		printf("Miss Rate: %.3f\n", missChance);
+        }
+    }
+    /*
+     * FULLY ASSOCIATIVE MAPPING
+     *
+     */
+    else if(strncmp(argv[1],"fully",5)==0){
+    	while (fgets(mem_request, 20, fp)!= NULL) {
+            address = convert_address(mem_request);
+			#undef WAY_SIZE
+			#define WAY_SIZE  NUM_BLOCKS
+			#undef NUM_SETS
+			#define NUM_SETS  (NUM_BLOCKS / WAY_SIZE)
+            set_mapped_cache_access(&s_cache, address);
+    	}
+        //PRINT OUT HIT AND MISS RATES
+        if(s_cache.hits ==0){
+    		printf("Cache Miss Rate: 1.000\n");
+    		printf("Cache Hit Rate:  0.000\n");
+        }
+        else if(s_cache.misses==0){
+    		printf("Cache Miss Rate: 0.000\n");
+    		printf("Cache Hit Rate:  1.000\n");
+        }
+        else{
+    		float missChance =((float) s_cache.misses/(s_cache.hits+s_cache.misses));
+    		float hitChance = 1 - missChance;
+    		printf("Hit Rate:  %.3f\n", hitChance);
+    		printf("Miss Rate: %.3f\n", missChance);
+        }
     }
 
     fclose(fp);
@@ -190,8 +234,7 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
 	int setIndexSize = log2(NUM_SETS);
 	int offsetSize = log2(BLOCK_SIZE);
 	int tagSize = 32 - (setIndexSize + offsetSize);
-	printf("\n index size %d offset  %d  tag %d\n",setIndexSize,offsetSize,tagSize);
-
+	//printf("\n index size %d offset  %d  tag %d\n",setIndexSize,offsetSize,tagSize);
 
 	//push all bits out except the tag
 	uint64_t tagNum = (address>>(32-tagSize));
@@ -212,13 +255,14 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
     int i;
     int hit = 0;
     //look in that set and check if any are the same tags
-    for(j=0;j<= NUM_SETS; j++){
-    	for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
-    		if(cache->tag_field[j,i]== tagNum && cache->valid_field[j,i]==1){
-    			printf("Hit!\n");
-    			cache->hits +=1;
-    		}
+    for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
+    	if(cache->tag_field[SetIndex][i]== tagNum && cache->valid_field[SetIndex][i]==1){
+    		printf("Hit!\n");
+    		cache->hits +=1;
+    		hit=1;
+    		break;
     	}
+
     }
     //we did not find a match for it last time
     if(hit==0){
@@ -227,19 +271,21 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
       //now use NRU to place it somewhere
     	//Used to signal if all NRU are 1 or not
     	int didReplace = 0;
-        for(j=0;j<= NUM_SETS; j++){
-        	for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
-        		if(cache->NRU_field[j,i]== 0){
-        			//can replace here so do so
-        			didReplace = 1;
-        			cache->tag_field[j,i] = tagNum;
-        			cache->valid_field[j,i] = 1;
-        		}
-        	}
+        for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
+        	if(cache->NRU_field[SetIndex][i]== 0){
+        		//can replace here so do so
+       			didReplace = 1;
+       			cache->tag_field[SetIndex][i] = tagNum;
+       			cache->valid_field[SetIndex][i] = 1;
+       			break;
+       		}
         }
         //so no blocks has 0 NRU
         if(didReplace==0){
         	//clear them all to 0
+            for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
+            	cache->NRU_field[SetIndex][i]=0;
+            }
         }
     }
 }
