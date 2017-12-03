@@ -195,32 +195,29 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
 
 	//push all bits out except the tag
 	uint64_t tagNum = (address>>(32-tagSize));
- //dont need to calculate the offset number
-	//peel off the starting numbers then put back
-	//uint64_t offsetNum = address << (32-offsetSize);
-    //offsetNum = offsetNum >> (32-offsetSize);
 
 	//this got us the block address
 	uint64_t newAddress = address >> offsetSize;
     //should be zero in a direct cache case
-	printf("%d",newAddress);
-    uint64_t setIndexNum = ((setIndexNum)&((1<<(setIndexSize))-1));
-    //setIndexNum = setIndexNum >> tagSize;
-    //setIndexNum = setIndexNum << tagSize;
+	printf("new address %d",newAddress);
 
-    //block offset = memory address % (block size in bytes)
-    //block address = memory address / (block size in bytes)
-    //set inde = block address %  (number of sets)
-
+    uint64_t setIndexNum = newAddress%((uint64_t)pow(2,NUM_SETS));
     uint64_t blockOffset  = address%BLOCK_SIZE;
     uint64_t blockAddress = address/BLOCK_SIZE;
-    uint64_t SetIndex = blockAddress%NUM_SETS;
+    printf("\n%d\n",blockAddress);
 
+    uint64_t SetIndex = blockAddress%NUM_SETS;
+    printf("\n%d\n",setIndexNum);
 
 #ifdef DBG
-    printf("Memory address: %llu, Tag: %d, Set Index: %d Block Address: %d\n", address, tagNum, SetIndex,blockAddress);
+    printf("Address: %d\n",address);
+    printf("Tag: %d\n",tagNum);
+    printf("Set: %d\n",SetIndex);
+    printf("block: %d\n",blockAddress);
+    printf("Memory address: %d, Tag: %d, Set Index: %d Block Address: %d\n", address, tagNum, SetIndex,blockAddress);
 
     #endif
+    printf("\nNumber of sets: %d\n", NUM_SETS);
     /*
     //calculate if it hits or not and print if it does
     if (cache->valid_field[setIndexNum] && cache->tag_field[setIndexNum] == tagNum) { //cache hit

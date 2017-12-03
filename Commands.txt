@@ -1,5 +1,5 @@
-./cachesim direct ./trace_for_students/trace.stream_20
-./cachesim set ./trace_for_students/trace.stream_20
+./cachesim direct ./trace_for_students/trace.stream_10
+./cachesim set ./trace_for_students/trace.stream_10
 gcc cachesim.c -o cachesim
 
 
