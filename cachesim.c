@@ -10,6 +10,8 @@
 #include <string.h>
 #include <math.h>
 #include <inttypes.h>
+#include <time.h>
+#include <stdlib.h>
 #include "cachesim.h"
 
 int main(int argc, char *argv[])
@@ -131,6 +133,7 @@ int main(int argc, char *argv[])
 			#define WAY_SIZE  NUM_BLOCKS
 			#undef NUM_SETS
 			#define NUM_SETS  (NUM_BLOCKS / WAY_SIZE)
+            //the fully associate cache is just a set associative cache with a waysize equal to number of blocks
             set_mapped_cache_access(&s_cache, address);
     	}
         //PRINT OUT HIT AND MISS RATES
@@ -244,7 +247,7 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
 	int setIndexSize = log2(NUM_SETS);
 	int offsetSize = log2(BLOCK_SIZE);
 	int tagSize = 32 - (setIndexSize + offsetSize);
-	//printf("\n index size %d offset  %d  tag %d\n",setIndexSize,offsetSize,tagSize);
+	printf("\n index size %d offset  %d  tag %d\n",setIndexSize,offsetSize,tagSize);
 
 	//push all bits out except the tag
 	uint64_t tagNum = (address>>(32-tagSize));
@@ -264,39 +267,115 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
     int j;
     int i;
     int hit = 0;
-    //look in that set and check if any are the same tags
-    for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
-    	if(cache->tag_field[SetIndex][i]== tagNum && cache->valid_field[SetIndex][i]==1){
-    		printf("Hit!\n");
-    		cache->hits +=1;
-    		hit=1;
-    		break;
+    /*
+     * NRU replacement method
+     * The type can be changed in the header
+     */
+    if(ReplacementType == 1){
+		//look in that set and check if any are the same tags
+		for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
+			if(cache->tag_field[SetIndex][i]== tagNum && cache->valid_field[SetIndex][i]==1){
+				printf("Hit!\n");
+				cache->hits +=1;
+				hit=1;
+				break;
+			}
+
+		}
+		//we did not find a match for it last time
+		if(hit==0){
+			cache->misses+=1;
+			printf("Miss!\n");
+		  //now use NRU to place it somewhere
+			//Used to signal if all NRU are 1 or not
+			int didReplace = 0;
+			for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
+				if(cache->NRU_field[SetIndex][i]== 0){
+					//can replace here so do so
+					didReplace = 1;
+					cache->tag_field[SetIndex][i] = tagNum;
+					cache->valid_field[SetIndex][i] = 1;
+					break;
+				}
+			}
+			//so no blocks has 0 NRU
+			if(didReplace==0){
+				//clear them all to 0
+				for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
+					cache->NRU_field[SetIndex][i]=0;
+				}
+			}
+		}
+    }
+    /*PLRU
+     * Replacement
+     */
+    if(ReplacementType==2){
+    	//build the binary tree (EACH SET HAS THEIR OWN BIN TREE)
+    		//has nway - 1 amount of nodes
+    		//each node has a direction bit 1 or 0
+    			//1 means go right to find PLRU
+    			//0 means go left to find PLRU canidate
+    		//in case of miss start at root not and compare flags to find it
+
+    	//create an array of binary trees, one for each set and initialize them
+    	int p =0;
+    	tree SetTrees[NUM_SETS];
+    	//make a tree for each set
+    		//to get the depth of the node log2(waysize)-1
+    	for(int p = 0; p<= NUM_SETS; p++){
+    		SetTrees[p] = CreateTree();
     	}
 
     }
-    //we did not find a match for it last time
-    if(hit==0){
-    	cache->misses+=1;
-    	printf("Miss!\n");
-      //now use NRU to place it somewhere
-    	//Used to signal if all NRU are 1 or not
-    	int didReplace = 0;
+
+    /*
+     * RR implementation
+     * replacement
+     */
+    if(ReplacementType ==3){
+    	//check if there if it hits
         for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
-        	if(cache->NRU_field[SetIndex][i]== 0){
-        		//can replace here so do so
-       			didReplace = 1;
-       			cache->tag_field[SetIndex][i] = tagNum;
-       			cache->valid_field[SetIndex][i] = 1;
-       			break;
-       		}
+        	if(cache->tag_field[SetIndex][i]== tagNum && cache->valid_field[SetIndex][i]==1){
+        		printf("Hit!\n");
+        		cache->hits +=1;
+        		hit=1;
+        		break;
+        	}
+
         }
-        //so no blocks has 0 NRU
-        if(didReplace==0){
-        	//clear them all to 0
-            for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
-            	cache->NRU_field[SetIndex][i]=0;
-            }
+        //we did not find a match for it last time (no hits)
+        if(hit==0){
+        	cache->misses+=1;
+        	printf("Miss!\n");
+          //now use RR to place it somewhere
+        	//Used to signal if all NRU are 1 or not
+        	//now just replace any block in the set at random (Number betweeen 0 and the max blocks in sets)
+        	int replaceIndex = rand()%(NUM_BLOCKS/NUM_SETS);
+   			printf("Replacing at random index: %d\n",replaceIndex);
+   			printf("The max is %d\n",NUM_BLOCKS/NUM_SETS);
+        	//replace at this index
+   			cache->tag_field[SetIndex][i] = tagNum;
+   			cache->valid_field[SetIndex][i] = 1;
         }
     }
+}
+
+//instantiate trees
+tree *CreateTree(){
+	tree *oak = (struct tree*)malloc(sizeof(tree));
+	oak->left = NULL;
+	oak->right = NULL;
+	return tree;
+}
+
+node *CreateNodes(node *parent, tree *root){
+	node *noder = (struct node*)malloc(sizeof(node));
+	noder->flag = 0;
+	noder->parent = parent;
+	noder->left = NULL;
+	noder->right = NULL;
+	noder->root = root;
+	return noder;
 }
 
