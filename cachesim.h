@@ -12,7 +12,7 @@
 
 #define NUM_BLOCKS  (CACHE_SIZE / BLOCK_SIZE)
 #define NUM_SETS    (NUM_BLOCKS / WAY_SIZE)
-#define ReplacementType 2  //1 is NRU  2 is PLRU  3 is RR
+#define ReplacementType 1  //1 is NRU  2 is PLRU  3 is RR
 #define DBG true
 
 /*The data structure of direct-mapped cache*/
@@ -52,8 +52,6 @@ typedef struct noder node;
 
 struct tree{
 	struct noder *root;
-	struct noder *left;
-	struct noder *right;
 };
 typedef struct tree tree;
 /*Read the memory traces and convert it to binary*/

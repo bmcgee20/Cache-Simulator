@@ -247,13 +247,18 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
     	//create an array of binary trees, one for each set and initialize them
     	int p =0;
     	int z= 0;
+    	int zero = 0;
     	//make a tree for each set
     		//to get the depth of the node log2(waysize)-1
     	for(int p = 0; p<= NUM_SETS; p++){
     		SetTrees[p] = *CreateTree();
     		//create the nodes inside it
-    		SetTrees[p].root = FillTree(&SetTrees[p],SetTrees[p].root, 0, log(WAY_SIZE)/log(2)-1)->root;
+    		printf("\n\nTree #%d\n",p);
+    		SetTrees[p].root = FillTree(&SetTrees[p],SetTrees[p].root, zero, (log(WAY_SIZE)/log(2)-1));
+
     	}
+    	printf("set tree \n");
+    	printf("set tree %d\n", SetTrees[0].root->left->flag);
     	//trees are now properly created
     }
 
@@ -391,11 +396,11 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
         	int realIndex;
         	int possMin = 0;
         	int possMax = WAY_SIZE;
-        	node *currentNode = ThisSetsTree.root;
+        	node* currentNode = SetTrees[SetIndex].root;
         	printf("DEBUG: 2\n");
 
         	for(z=0; z<(log(WAY_SIZE)/log(2)-1);z++){
-        		if(currentNode!= NULL && currentNode->flag ==0){
+        		if(currentNode->flag ==0){
                 	printf("DEBUG: 4\n");
                 	printf("DEBUG: %d\n", currentNode->left->flag);
 
@@ -410,8 +415,15 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
                 	printf("DEBUG: 5\n");
 
         			currentNode->flag=1;
+
+                	printf("DEBUG: 56\n");
+
         			currentNode = currentNode->right;
+                	printf("DEBUG: 56\n");
+
         			possMin = possMin + (possMax/2);
+                	printf("DEBUG: 56\n");
+
         		}
         	}
         	printf("DEBUG: 3\n");
@@ -463,8 +475,6 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
 //instantiate trees
 tree *CreateTree(){
 	tree *oak = (tree*)malloc(sizeof(tree));
-	oak->left = NULL;
-	oak->right = NULL;
 	oak->root = CreateNodes(NULL,oak);
 	return oak;
 }
@@ -480,13 +490,22 @@ node *CreateNodes(node *parent, tree *root){
 }
 
 node *FillTree(tree *birch,node *noder, int currentDepth, int maxDepth){
-	if(currentDepth=maxDepth){
-		return noder;
+	//just return the root now
+	printf("occuring    current: %d  max: %d\n", currentDepth, maxDepth);
+
+	if(currentDepth==maxDepth){
+		printf("IS this ever occuring    current: %d  max: %d\n", currentDepth, maxDepth);
+		printf("flagger: %d\n", birch->root->left->flag);
+		return noder->root;
 	}
 	node * left = CreateNodes(noder, birch);
 	node * right = CreateNodes(noder, birch);
+	noder->left =left;
+	noder->right= right;
+
 	//continue creating the tree
-	FillTree(birch, left, currentDepth+1, maxDepth);
-	FillTree(birch, right, currentDepth+1, maxDepth);
+	left = FillTree(birch, left, currentDepth+1, maxDepth);
+	right = FillTree(birch, right, currentDepth+1, maxDepth);
+	printf("NODER: %d  %d  current %d   max %d\n", noder->left->flag, noder->right->flag, currentDepth, maxDepth);
 	return noder;
 }
