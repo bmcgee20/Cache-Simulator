@@ -100,6 +100,11 @@ int main(int argc, char *argv[])
             set_mapped_cache_access(&s_cache, address);
     	}
         //PRINT OUT HIT AND MISS RATES
+        printf("\n===============================================\n");
+        printf("Cache type:    Set-Associative-Mapped Cache\n");
+        printf("=================================================\n");
+        printf("Cache Hits:    %d\n", s_cache.hits);
+        printf("Cache Misses:  %d\n", s_cache.misses);
         if(s_cache.hits ==0){
     		printf("Cache Miss Rate: 1.000\n");
     		printf("Cache Hit Rate:  0.000\n");
@@ -129,6 +134,11 @@ int main(int argc, char *argv[])
             set_mapped_cache_access(&s_cache, address);
     	}
         //PRINT OUT HIT AND MISS RATES
+        printf("\n===============================================\n");
+        printf("Cache type:    Fully-Associative Cache\n");
+        printf("=================================================\n");
+        printf("Cache Hits:    %d\n", s_cache.hits);
+        printf("Cache Misses:  %d\n", s_cache.misses);
         if(s_cache.hits ==0){
     		printf("Cache Miss Rate: 1.000\n");
     		printf("Cache Hit Rate:  0.000\n");
