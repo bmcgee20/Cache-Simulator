@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
     FILE *fp;
 
 
+
     /* Initialization */
     for (int i=0; i<NUM_BLOCKS; i++) {
         d_cache.valid_field[i] = 0;
@@ -129,10 +130,10 @@ int main(int argc, char *argv[])
     else if(strncmp(argv[1],"fully",5)==0){
     	while (fgets(mem_request, 20, fp)!= NULL) {
             address = convert_address(mem_request);
-			#undef WAY_SIZE
-			#define WAY_SIZE  NUM_BLOCKS
-			#undef NUM_SETS
-			#define NUM_SETS  (NUM_BLOCKS / WAY_SIZE)
+	//		#undef WAY_SIZE
+	//		#define WAY_SIZE  NUM_BLOCKS
+	//		#undef NUM_SETS
+	//		#define NUM_SETS  (NUM_BLOCKS / WAY_SIZE)
             //the fully associate cache is just a set associative cache with a waysize equal to number of blocks
             set_mapped_cache_access(&s_cache, address);
     	}
@@ -240,6 +241,22 @@ void direct_mapped_cache_access(struct direct_mapped_cache *cache, uint64_t addr
 
 void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t address)
 {
+	tree SetTrees[NUM_SETS];
+    //if the replacement type is PLRU then we need to make the trees
+    if(ReplacementType==2){
+    	//create an array of binary trees, one for each set and initialize them
+    	int p =0;
+    	int z= 0;
+    	//make a tree for each set
+    		//to get the depth of the node log2(waysize)-1
+    	for(int p = 0; p<= NUM_SETS; p++){
+    		SetTrees[p] = *CreateTree();
+    		//create the nodes inside it
+    		SetTrees[p].root = FillTree(&SetTrees[p],SetTrees[p].root, 0, log(WAY_SIZE)/log(2)-1)->root;
+    	}
+    	//trees are now properly created
+    }
+
     //size of each part
     	//index is size 2^n where 2^n is amount of sets
     	//offset is the 2^a where 2^a is the size of block in bytes
@@ -261,7 +278,7 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
     printf("Set: %d\n",SetIndex);
     printf("block: %d\n",blockAddress);
     #endif
-    printf("\nNumber of sets: %d\n", NUM_SETS);
+    printf("\nNumber of sets: %d   %d \n", NUM_SETS, NUM_BLOCKS);
 
     //calculate if it hits or not and print if it does
     int j;
@@ -317,16 +334,99 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
     			//1 means go right to find PLRU
     			//0 means go left to find PLRU canidate
     		//in case of miss start at root not and compare flags to find it
-
     	//create an array of binary trees, one for each set and initialize them
-    	int p =0;
-    	tree SetTrees[NUM_SETS];
-    	//make a tree for each set
-    		//to get the depth of the node log2(waysize)-1
-    	for(int p = 0; p<= NUM_SETS; p++){
-    		SetTrees[p] = CreateTree();
-    	}
+    	/*
+    	 *
+    	 *
+    	 *
+    	 *
+    	 */
+    	//Check if it is a hit in the set
+        for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
+        	if(cache->tag_field[SetIndex][i]== tagNum && cache->valid_field[SetIndex][i]==1){
+        		printf("Hit!\n");
+        		cache->hits +=1;
+        		hit=1;
+        		//change this tree to reflect this
+        			//if we hit at index i we need to walk it to find it
+        		int r= 0;
+        		tree ThisSetsTree = SetTrees[SetIndex];
+        		node * currentNode = ThisSetsTree.root;
+        		int min=0;
+        		int max = WAY_SIZE;
+            	for(r=0; r<=(log(WAY_SIZE)/log(2)-1);r++){
+            		if(max-min==1){
+            			if(i%2==0){
+            				currentNode->flag = 1;
+            			}
+            			else{
+            				currentNode->flag = 0;
+            			}
+            		}
+            		else if(i<(max/2)){
+            			currentNode->flag = 1;
+            			currentNode = currentNode->right;
+            			min = min + max/2+1;
+            		}
+            		else{
+            			currentNode->flag = 0;
+            			currentNode = currentNode->left;
+            			max = max/2;
+            		}
+            	}
+        		break;
+        	}
 
+        }
+        //we did not find a match for it last time (no hits)
+        if(hit==0){
+        	cache->misses+=1;
+        	printf("Miss!\n");
+        	//now use PLRU with the tree that has been made
+        	printf("DEBUG: Attemping PLRU\n");
+        	//walk the tree looking for the last used
+        	printf("DEBUG: 1\n");
+        	tree  ThisSetsTree = SetTrees[SetIndex];
+        	int z = 0;
+        	int realIndex;
+        	int possMin = 0;
+        	int possMax = WAY_SIZE;
+        	node *currentNode = ThisSetsTree.root;
+        	printf("DEBUG: 2\n");
+
+        	for(z=0; z<(log(WAY_SIZE)/log(2)-1);z++){
+        		if(currentNode!= NULL && currentNode->flag ==0){
+                	printf("DEBUG: 4\n");
+                	printf("DEBUG: %d\n", currentNode->left->flag);
+
+        			//move right if you can
+        			currentNode->flag=1;
+        			currentNode = currentNode->left;
+                	printf("DEBUG: 66\n");
+
+        			possMax = possMax/2;
+        		}
+        		else{
+                	printf("DEBUG: 5\n");
+
+        			currentNode->flag=1;
+        			currentNode = currentNode->right;
+        			possMin = possMin + (possMax/2);
+        		}
+        	}
+        	printf("DEBUG: 3\n");
+
+        	if(currentNode->flag == 0){
+        		realIndex = possMin;
+        	}
+        	else{
+        		realIndex = possMax;
+        	}
+        	//replace at this index
+   			cache->tag_field[SetIndex][realIndex] = tagNum;
+   			cache->valid_field[SetIndex][realIndex] = 1;
+   			printf("Finished the search tree: index is : %d\n",realIndex);
+        }
     }
 
     /*
@@ -349,7 +449,6 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
         	cache->misses+=1;
         	printf("Miss!\n");
           //now use RR to place it somewhere
-        	//Used to signal if all NRU are 1 or not
         	//now just replace any block in the set at random (Number betweeen 0 and the max blocks in sets)
         	int replaceIndex = rand()%(NUM_BLOCKS/NUM_SETS);
    			printf("Replacing at random index: %d\n",replaceIndex);
@@ -363,19 +462,31 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
 
 //instantiate trees
 tree *CreateTree(){
-	tree *oak = (struct tree*)malloc(sizeof(tree));
+	tree *oak = (tree*)malloc(sizeof(tree));
 	oak->left = NULL;
 	oak->right = NULL;
-	return tree;
+	oak->root = CreateNodes(NULL,oak);
+	return oak;
 }
 
 node *CreateNodes(node *parent, tree *root){
-	node *noder = (struct node*)malloc(sizeof(node));
+	node *noder = (node*)malloc(sizeof(node));
 	noder->flag = 0;
 	noder->parent = parent;
 	noder->left = NULL;
 	noder->right = NULL;
-	noder->root = root;
+	noder->root = root->root;
 	return noder;
 }
 
+node *FillTree(tree *birch,node *noder, int currentDepth, int maxDepth){
+	if(currentDepth=maxDepth){
+		return noder;
+	}
+	node * left = CreateNodes(noder, birch);
+	node * right = CreateNodes(noder, birch);
+	//continue creating the tree
+	FillTree(birch, left, currentDepth+1, maxDepth);
+	FillTree(birch, right, currentDepth+1, maxDepth);
+	return noder;
+}

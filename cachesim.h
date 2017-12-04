@@ -7,12 +7,12 @@
 
 #define BLOCK_SIZE  64        /* Cache block size (or cache line size) in bytes \\
                                  (must be power of 2). 4 Bytes = 1 Word */
-#define WAY_SIZE    4         /* Associativity; 1-way = direct-mapped */
+#define WAY_SIZE    8         /* Associativity; 1-way = direct-mapped */
 #define CACHE_SIZE  32768     /* Cache capacity in bytes (must be power of 2)*/
 
 #define NUM_BLOCKS  (CACHE_SIZE / BLOCK_SIZE)
 #define NUM_SETS    (NUM_BLOCKS / WAY_SIZE)
-#define ReplacementType 3  //1 is NRU  2 is PLRU  3 is RR
+#define ReplacementType 2  //1 is NRU  2 is PLRU  3 is RR
 #define DBG true
 
 /*The data structure of direct-mapped cache*/
@@ -51,8 +51,9 @@ struct noder{
 typedef struct noder node;
 
 struct tree{
-	struct node *left;
-	struct node *right;
+	struct noder *root;
+	struct noder *left;
+	struct noder *right;
 };
 typedef struct tree tree;
 /*Read the memory traces and convert it to binary*/
@@ -62,3 +63,7 @@ uint64_t convert_address(char memory[]);
 void direct_mapped_cache_access(struct direct_mapped_cache *cache, uint64_t address);
 void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t address);
 
+tree *CreateTree();
+node *CreateNodes(node *parent, tree *root);
+
+node *FillTree(tree *birch,node *noder, int currentDepth, int maxDepth);
