@@ -1,0 +1,158 @@
+BLOCK SIZE = 64 Bytes
+16-WAY
+CACHE SIZE = 32768 Bytes
+NUMBER OF BLOCKS = 512
+NUMBER OF SETS = 32
+
+
+-------NEW NUM-------
+ 0000000c
+ converted to 12
+
+Index Size 0 Offset 6 Tag 26
+Address: 12
+Tag Num: 0
+Set Index: 0
+Block Address: 0
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 000002d0
+ converted to 720
+
+Index Size 0 Offset 6 Tag 26
+Address: 720
+Tag Num: 11
+Set Index: 0
+Block Address: 11
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 000000ac
+ converted to 172
+
+Index Size 0 Offset 6 Tag 26
+Address: 172
+Tag Num: 2
+Set Index: 0
+Block Address: 2
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 00000008
+ converted to 8
+
+Index Size 0 Offset 6 Tag 26
+Address: 8
+Tag Num: 0
+Set Index: 0
+Block Address: 0
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 000002fc
+ converted to 764
+
+Index Size 0 Offset 6 Tag 26
+Address: 764
+Tag Num: 11
+Set Index: 0
+Block Address: 11
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 00000160
+ converted to 352
+
+Index Size 0 Offset 6 Tag 26
+Address: 352
+Tag Num: 5
+Set Index: 0
+Block Address: 5
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 000002f8
+ converted to 760
+
+Index Size 0 Offset 6 Tag 26
+Address: 760
+Tag Num: 11
+Set Index: 0
+Block Address: 11
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 00000038
+ converted to 56
+
+Index Size 0 Offset 6 Tag 26
+Address: 56
+Tag Num: 0
+Set Index: 0
+Block Address: 0
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 000002d4
+ converted to 724
+
+Index Size 0 Offset 6 Tag 26
+Address: 724
+Tag Num: 11
+Set Index: 0
+Block Address: 11
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 000000b0
+ converted to 176
+
+Index Size 0 Offset 6 Tag 26
+Address: 176
+Tag Num: 2
+Set Index: 0
+Block Address: 2
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 000002e8
+ converted to 744
+
+Index Size 0 Offset 6 Tag 26
+Address: 744
+Tag Num: 11
+Set Index: 0
+Block Address: 11
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 000003f4
+ converted to 1012
+
+Index Size 0 Offset 6 Tag 26
+Address: 1012
+Tag Num: 15
+Set Index: 0
+Block Address: 15
+Number of Sets: 1   512
+Miss!
+
+===============================================
+Cache type:    Fully-Associative Cache
+=================================================
+Cache Hits:    0
+Cache Misses:  12
+Cache Miss Rate: 1.000
+Cache Hit Rate:  0.000

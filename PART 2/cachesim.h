@@ -5,15 +5,15 @@
  * FALL 2017
  */
 
-#define BLOCK_SIZE  64        /* Cache block size (or cache line size) in bytes \\
+#define BLOCK_SIZE  128        /* Cache block size (or cache line size) in bytes \\
                                  (must be power of 2). 4 Bytes = 1 Word */
-#define WAY_SIZE    8         /* Associativity; 1-way = direct-mapped */
+#define WAY_SIZE    16         /* Associativity; 1-way = direct-mapped */
 #define CACHE_SIZE  32768     /* Cache capacity in bytes (must be power of 2)*/
 
 #define NUM_BLOCKS  (CACHE_SIZE / BLOCK_SIZE)
 #define NUM_SETS    (NUM_BLOCKS / WAY_SIZE)
 #define ReplacementType 1  //1 is NRU  2 is PLRU  3 is RR
-#define DBG true
+//#define DBG true
 
 /*The data structure of direct-mapped cache*/
 struct direct_mapped_cache {
@@ -59,7 +59,7 @@ uint64_t convert_address(char memory[]);
 
 /*Simulate the direct-mapped cache*/
 void direct_mapped_cache_access(struct direct_mapped_cache *cache, uint64_t address);
-void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t address);
+void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t address, int type);
 
 tree *CreateTree();
 node *CreateNodes(node *parent, tree *root);

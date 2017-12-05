@@ -1,0 +1,254 @@
+BLOCK SIZE = 64 Bytes
+8-WAY
+CACHE SIZE = 32768 Bytes
+NUMBER OF BLOCKS = 512
+NUMBER OF SETS = 64
+
+
+-------NEW NUM-------
+ 0000af40
+ converted to 44864
+
+Index Size 6 Offset 6 Tag 20
+Address: 44864
+Tag Num: 10
+Set Index: 61
+Block Address: 701
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 00000000
+ converted to 0
+
+Index Size 6 Offset 6 Tag 20
+Address: 0
+Tag Num: 0
+Set Index: 0
+Block Address: 0
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 00001000
+ converted to 4096
+
+Index Size 6 Offset 6 Tag 20
+Address: 4096
+Tag Num: 1
+Set Index: 0
+Block Address: 64
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 00002000
+ converted to 8192
+
+Index Size 6 Offset 6 Tag 20
+Address: 8192
+Tag Num: 2
+Set Index: 0
+Block Address: 128
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 00003000
+ converted to 12288
+
+Index Size 6 Offset 6 Tag 20
+Address: 12288
+Tag Num: 3
+Set Index: 0
+Block Address: 192
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 00004000
+ converted to 16384
+
+Index Size 6 Offset 6 Tag 20
+Address: 16384
+Tag Num: 4
+Set Index: 0
+Block Address: 256
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 00005000
+ converted to 20480
+
+Index Size 6 Offset 6 Tag 20
+Address: 20480
+Tag Num: 5
+Set Index: 0
+Block Address: 320
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 00006000
+ converted to 24576
+
+Index Size 6 Offset 6 Tag 20
+Address: 24576
+Tag Num: 6
+Set Index: 0
+Block Address: 384
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 00007000
+ converted to 28672
+
+Index Size 6 Offset 6 Tag 20
+Address: 28672
+Tag Num: 7
+Set Index: 0
+Block Address: 448
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 00008000
+ converted to 32768
+
+Index Size 6 Offset 6 Tag 20
+Address: 32768
+Tag Num: 8
+Set Index: 0
+Block Address: 512
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 00009000
+ converted to 36864
+
+Index Size 6 Offset 6 Tag 20
+Address: 36864
+Tag Num: 9
+Set Index: 0
+Block Address: 576
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 0000b580
+ converted to 46464
+
+Index Size 6 Offset 6 Tag 20
+Address: 46464
+Tag Num: 11
+Set Index: 22
+Block Address: 726
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 0000b580
+ converted to 46464
+
+Index Size 6 Offset 6 Tag 20
+Address: 46464
+Tag Num: 11
+Set Index: 22
+Block Address: 726
+Number of Sets: 64   512
+Hit!
+
+-------NEW NUM-------
+ 0000c000
+ converted to 49152
+
+Index Size 6 Offset 6 Tag 20
+Address: 49152
+Tag Num: 12
+Set Index: 0
+Block Address: 768
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 0000deb8
+ converted to 57016
+
+Index Size 6 Offset 6 Tag 20
+Address: 57016
+Tag Num: 13
+Set Index: 58
+Block Address: 890
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 0000daa8
+ converted to 55976
+
+Index Size 6 Offset 6 Tag 20
+Address: 55976
+Tag Num: 13
+Set Index: 42
+Block Address: 874
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 0000daa8
+ converted to 55976
+
+Index Size 6 Offset 6 Tag 20
+Address: 55976
+Tag Num: 13
+Set Index: 42
+Block Address: 874
+Number of Sets: 64   512
+Hit!
+
+-------NEW NUM-------
+ 0000ab44
+ converted to 43844
+
+Index Size 6 Offset 6 Tag 20
+Address: 43844
+Tag Num: 10
+Set Index: 45
+Block Address: 685
+Number of Sets: 64   512
+Miss!
+
+-------NEW NUM-------
+ 0000ab44
+ converted to 43844
+
+Index Size 6 Offset 6 Tag 20
+Address: 43844
+Tag Num: 10
+Set Index: 45
+Block Address: 685
+Number of Sets: 64   512
+Hit!
+
+-------NEW NUM-------
+ 0000b590
+ converted to 46480
+
+Index Size 6 Offset 6 Tag 20
+Address: 46480
+Tag Num: 11
+Set Index: 22
+Block Address: 726
+Number of Sets: 64   512
+Hit!
+
+===============================================
+Cache type:    Set-Associative-Mapped Cache
+=================================================
+Cache Hits:    4
+Cache Misses:  16
+Hit Rate:  0.200
+Miss Rate: 0.800

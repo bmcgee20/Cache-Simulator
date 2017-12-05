@@ -59,7 +59,7 @@ uint64_t convert_address(char memory[]);
 
 /*Simulate the direct-mapped cache*/
 void direct_mapped_cache_access(struct direct_mapped_cache *cache, uint64_t address);
-void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t address);
+void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t address, int type);
 
 tree *CreateTree();
 node *CreateNodes(node *parent, tree *root);

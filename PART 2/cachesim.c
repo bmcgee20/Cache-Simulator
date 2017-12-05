@@ -13,7 +13,25 @@
 #include <time.h>
 #include <stdlib.h>
 #include "cachesim.h"
-
+/*
+ * DOCUMENTATION:
+ * 		Author: Jarrod McGee
+ *
+ * 		Directions:
+ * 			Fully associative cache:  Just use the word fully in the command line as so
+ * 					./cachesim fully ./trace_for_students/trace.stream
+ * 			Set associative cache: Just use the word set in the command line as so
+ * 					./cachesim set ./trace_for_students/trace.stream
+ * 			How to use the makefile: Open the command line in the folder of the makefile and just type make, it will
+ * 								compile the executable.
+ * 			Where to find things in this code: (Subject to some changes)
+ * 				Fully associative functionality: Line 69-76 (Init), 148 (get string arg),260 (functionality)
+ * 				Set associative functionality: Line 116 (get string args/ report), 69-76 (Init),  260 (functionality)
+ * 				PLRU code: Line 350 (main functionality), 488-end (binary tree set up)
+ * 				RR functionality: Line 457 (all funcionality)
+ *
+ *
+ */
 int main(int argc, char *argv[])
 {
     if (argc != 3) {
@@ -100,7 +118,7 @@ int main(int argc, char *argv[])
     else if(strncmp(argv[1],"set",3)==0){
     	while (fgets(mem_request, 20, fp)!= NULL) {
             address = convert_address(mem_request);
-            set_mapped_cache_access(&s_cache, address);
+            set_mapped_cache_access(&s_cache, address,1);
     	}
         //PRINT OUT HIT AND MISS RATES
         printf("\n===============================================\n");
@@ -135,7 +153,7 @@ int main(int argc, char *argv[])
 	//		#undef NUM_SETS
 	//		#define NUM_SETS  (NUM_BLOCKS / WAY_SIZE)
             //the fully associate cache is just a set associative cache with a waysize equal to number of blocks
-            set_mapped_cache_access(&s_cache, address);
+            set_mapped_cache_access(&s_cache, address,2);
     	}
         //PRINT OUT HIT AND MISS RATES
         printf("\n===============================================\n");
@@ -200,7 +218,7 @@ uint64_t convert_address(char memory_addr[])
 #ifdef DBG
     //memory addr is the 0000af40 stuff
     //binary is the convertion to like 44864
-    printf("%s converted to %llu\n", memory_addr, binary);
+    printf("\n-------NEW NUM-------\n %s converted to %llu\n", memory_addr, binary);
 #endif
     return binary;
 }
@@ -238,10 +256,19 @@ void direct_mapped_cache_access(struct direct_mapped_cache *cache, uint64_t addr
         cache->dirty_field[index] = 0;
     }
 }
-
-void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t address)
+//type 1 is set and type 2 is fully associative
+void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t address, int type)
 {
-	tree SetTrees[NUM_SETS];
+	int num_sets, way_size;
+	if(type == 1){//set associative
+		num_sets = NUM_SETS;
+		way_size = WAY_SIZE;
+	}
+	else{ //fully associative
+		way_size = NUM_BLOCKS;
+		num_sets = NUM_BLOCKS/way_size;
+	}
+	tree SetTrees[num_sets];
     //if the replacement type is PLRU then we need to make the trees
     if(ReplacementType==2){
     	//create an array of binary trees, one for each set and initialize them
@@ -250,15 +277,12 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
     	int zero = 0;
     	//make a tree for each set
     		//to get the depth of the node log2(waysize)-1
-    	for(int p = 0; p<= NUM_SETS; p++){
+    	for(int p = 0; p<= num_sets; p++){
     		SetTrees[p] = *CreateTree();
     		//create the nodes inside it
-    		printf("\n\nTree #%d\n",p);
-    		SetTrees[p].root = FillTree(&SetTrees[p],SetTrees[p].root, zero, (log(WAY_SIZE)/log(2)-1));
+    		SetTrees[p].root = FillTree(&SetTrees[p],SetTrees[p].root, zero, (log(way_size)/log(2)-1));
 
     	}
-    	printf("set tree \n");
-    	printf("set tree %d\n", SetTrees[0].root->left->flag);
     	//trees are now properly created
     }
 
@@ -266,24 +290,25 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
     	//index is size 2^n where 2^n is amount of sets
     	//offset is the 2^a where 2^a is the size of block in bytes
     	//tag is 32-n-a
-	int setIndexSize = log2(NUM_SETS);
+	int setIndexSize = log2(num_sets);
 	int offsetSize = log2(BLOCK_SIZE);
 	int tagSize = 32 - (setIndexSize + offsetSize);
-	printf("\n index size %d offset  %d  tag %d\n",setIndexSize,offsetSize,tagSize);
 
 	//push all bits out except the tag
 	uint64_t tagNum = (address>>(32-tagSize));
     uint64_t blockOffset  = address%BLOCK_SIZE;
     uint64_t blockAddress = address/BLOCK_SIZE;
-    uint64_t SetIndex = blockAddress%NUM_SETS;
+    uint64_t SetIndex = blockAddress%num_sets;
 
 #ifdef DBG
-    printf("Address: %d\n",address);
-    printf("Tag: %d\n",tagNum);
-    printf("Set: %d\n",SetIndex);
-    printf("block: %d\n",blockAddress);
+	printf("\nIndex Size %d Offset %d Tag %d\n",setIndexSize,offsetSize,tagSize);
+    printf("Address: %llu\n",address);
+    printf("Tag Num: %d\n",tagNum);
+    printf("Set Index: %d\n",SetIndex);
+    printf("Block Address: %d\n",blockAddress);
+    printf("Number of Sets: %d   %d \n", num_sets, NUM_BLOCKS);
+
     #endif
-    printf("\nNumber of sets: %d   %d \n", NUM_SETS, NUM_BLOCKS);
 
     //calculate if it hits or not and print if it does
     int j;
@@ -295,9 +320,11 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
      */
     if(ReplacementType == 1){
 		//look in that set and check if any are the same tags
-		for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
+		for(i=0; i<=(NUM_BLOCKS/num_sets); i++){
 			if(cache->tag_field[SetIndex][i]== tagNum && cache->valid_field[SetIndex][i]==1){
+#ifdef DBG
 				printf("Hit!\n");
+#endif
 				cache->hits +=1;
 				hit=1;
 				break;
@@ -307,11 +334,14 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
 		//we did not find a match for it last time
 		if(hit==0){
 			cache->misses+=1;
+#ifdef DBG
 			printf("Miss!\n");
+#endif
+
 		  //now use NRU to place it somewhere
 			//Used to signal if all NRU are 1 or not
 			int didReplace = 0;
-			for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
+			for(i=0; i<=(NUM_BLOCKS/num_sets); i++){
 				if(cache->NRU_field[SetIndex][i]== 0){
 					//can replace here so do so
 					didReplace = 1;
@@ -323,7 +353,7 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
 			//so no blocks has 0 NRU
 			if(didReplace==0){
 				//clear them all to 0
-				for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
+				for(i=0; i<=(NUM_BLOCKS/num_sets); i++){
 					cache->NRU_field[SetIndex][i]=0;
 				}
 			}
@@ -340,16 +370,13 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
     			//0 means go left to find PLRU canidate
     		//in case of miss start at root not and compare flags to find it
     	//create an array of binary trees, one for each set and initialize them
-    	/*
-    	 *
-    	 *
-    	 *
-    	 *
-    	 */
+
     	//Check if it is a hit in the set
-        for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
+        for(i=0; i<=(NUM_BLOCKS/num_sets); i++){
         	if(cache->tag_field[SetIndex][i]== tagNum && cache->valid_field[SetIndex][i]==1){
+#ifdef DBG
         		printf("Hit!\n");
+#endif
         		cache->hits +=1;
         		hit=1;
         		//change this tree to reflect this
@@ -358,8 +385,8 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
         		tree ThisSetsTree = SetTrees[SetIndex];
         		node * currentNode = ThisSetsTree.root;
         		int min=0;
-        		int max = WAY_SIZE;
-            	for(r=0; r<=(log(WAY_SIZE)/log(2)-1);r++){
+        		int max = way_size;
+            	for(r=0; r<=(log(way_size)/log(2)-1);r++){
             		if(max-min==1){
             			if(i%2==0){
             				currentNode->flag = 1;
@@ -386,48 +413,30 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
         //we did not find a match for it last time (no hits)
         if(hit==0){
         	cache->misses+=1;
+#ifdef DBG
         	printf("Miss!\n");
+#endif
         	//now use PLRU with the tree that has been made
-        	printf("DEBUG: Attemping PLRU\n");
         	//walk the tree looking for the last used
-        	printf("DEBUG: 1\n");
         	tree  ThisSetsTree = SetTrees[SetIndex];
         	int z = 0;
         	int realIndex;
         	int possMin = 0;
-        	int possMax = WAY_SIZE;
+        	int possMax = way_size;
         	node* currentNode = SetTrees[SetIndex].root;
-        	printf("DEBUG: 2\n");
-
-        	for(z=0; z<(log(WAY_SIZE)/log(2)-1);z++){
+        	for(z=0; z<(log(way_size)/log(2)-1);z++){
         		if(currentNode->flag ==0){
-                	printf("DEBUG: 4\n");
-                	printf("DEBUG: %d\n", currentNode->left->flag);
-
         			//move right if you can
         			currentNode->flag=1;
         			currentNode = currentNode->left;
-                	printf("DEBUG: 66\n");
-
         			possMax = possMax/2;
         		}
         		else{
-                	printf("DEBUG: 5\n");
-
         			currentNode->flag=1;
-
-                	printf("DEBUG: 56\n");
-
         			currentNode = currentNode->right;
-                	printf("DEBUG: 56\n");
-
         			possMin = possMin + (possMax/2);
-                	printf("DEBUG: 56\n");
-
         		}
         	}
-        	printf("DEBUG: 3\n");
-
         	if(currentNode->flag == 0){
         		realIndex = possMin;
         	}
@@ -437,7 +446,6 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
         	//replace at this index
    			cache->tag_field[SetIndex][realIndex] = tagNum;
    			cache->valid_field[SetIndex][realIndex] = 1;
-   			printf("Finished the search tree: index is : %d\n",realIndex);
         }
     }
 
@@ -447,9 +455,11 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
      */
     if(ReplacementType ==3){
     	//check if there if it hits
-        for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
+        for(i=0; i<=(NUM_BLOCKS/num_sets); i++){
         	if(cache->tag_field[SetIndex][i]== tagNum && cache->valid_field[SetIndex][i]==1){
+#ifdef DBG
         		printf("Hit!\n");
+#endif
         		cache->hits +=1;
         		hit=1;
         		break;
@@ -459,12 +469,15 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
         //we did not find a match for it last time (no hits)
         if(hit==0){
         	cache->misses+=1;
+#ifdef DBG
         	printf("Miss!\n");
+#endif
           //now use RR to place it somewhere
         	//now just replace any block in the set at random (Number betweeen 0 and the max blocks in sets)
-        	int replaceIndex = rand()%(NUM_BLOCKS/NUM_SETS);
-   			printf("Replacing at random index: %d\n",replaceIndex);
-   			printf("The max is %d\n",NUM_BLOCKS/NUM_SETS);
+        	int replaceIndex = rand()%(NUM_BLOCKS/num_sets);
+#ifdef DBG
+        	printf("Replacing at random index: %d\n",replaceIndex);
+#endif
         	//replace at this index
    			cache->tag_field[SetIndex][i] = tagNum;
    			cache->valid_field[SetIndex][i] = 1;
@@ -489,13 +502,10 @@ node *CreateNodes(node *parent, tree *root){
 	return noder;
 }
 
+//fill out the tree will nodes to create the PLRU tree
 node *FillTree(tree *birch,node *noder, int currentDepth, int maxDepth){
 	//just return the root now
-	printf("occuring    current: %d  max: %d\n", currentDepth, maxDepth);
-
 	if(currentDepth==maxDepth){
-		printf("IS this ever occuring    current: %d  max: %d\n", currentDepth, maxDepth);
-		printf("flagger: %d\n", birch->root->left->flag);
 		return noder->root;
 	}
 	node * left = CreateNodes(noder, birch);
@@ -506,6 +516,5 @@ node *FillTree(tree *birch,node *noder, int currentDepth, int maxDepth){
 	//continue creating the tree
 	left = FillTree(birch, left, currentDepth+1, maxDepth);
 	right = FillTree(birch, right, currentDepth+1, maxDepth);
-	printf("NODER: %d  %d  current %d   max %d\n", noder->left->flag, noder->right->flag, currentDepth, maxDepth);
 	return noder;
 }

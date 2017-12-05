@@ -1,0 +1,7 @@
+===============================================
+Cache type:    Fully-Associative Cache
+=================================================
+Cache Hits:    197461
+Cache Misses:  3036594
+Hit Rate:  0.061
+Miss Rate: 0.939

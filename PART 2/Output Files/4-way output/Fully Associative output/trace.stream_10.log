@@ -1,0 +1,134 @@
+BLOCK SIZE = 64 Bytes
+4-WAY
+CACHE SIZE = 32768 Bytes
+NUMBER OF BLOCKS = 512
+NUMBER OF SETS = 128
+
+
+-------NEW NUM-------
+ 0000af40
+ converted to 44864
+
+Index Size 0 Offset 6 Tag 26
+Address: 44864
+Tag Num: 701
+Set Index: 0
+Block Address: 701
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 00000000
+ converted to 0
+
+Index Size 0 Offset 6 Tag 26
+Address: 0
+Tag Num: 0
+Set Index: 0
+Block Address: 0
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 00001000
+ converted to 4096
+
+Index Size 0 Offset 6 Tag 26
+Address: 4096
+Tag Num: 64
+Set Index: 0
+Block Address: 64
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 00002000
+ converted to 8192
+
+Index Size 0 Offset 6 Tag 26
+Address: 8192
+Tag Num: 128
+Set Index: 0
+Block Address: 128
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 00003000
+ converted to 12288
+
+Index Size 0 Offset 6 Tag 26
+Address: 12288
+Tag Num: 192
+Set Index: 0
+Block Address: 192
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 00004000
+ converted to 16384
+
+Index Size 0 Offset 6 Tag 26
+Address: 16384
+Tag Num: 256
+Set Index: 0
+Block Address: 256
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 00005000
+ converted to 20480
+
+Index Size 0 Offset 6 Tag 26
+Address: 20480
+Tag Num: 320
+Set Index: 0
+Block Address: 320
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 00006000
+ converted to 24576
+
+Index Size 0 Offset 6 Tag 26
+Address: 24576
+Tag Num: 384
+Set Index: 0
+Block Address: 384
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 00007000
+ converted to 28672
+
+Index Size 0 Offset 6 Tag 26
+Address: 28672
+Tag Num: 448
+Set Index: 0
+Block Address: 448
+Number of Sets: 1   512
+Miss!
+
+-------NEW NUM-------
+ 00008000
+ converted to 32768
+
+Index Size 0 Offset 6 Tag 26
+Address: 32768
+Tag Num: 512
+Set Index: 0
+Block Address: 512
+Number of Sets: 1   512
+Miss!
+
+===============================================
+Cache type:    Fully-Associative Cache
+=================================================
+Cache Hits:    0
+Cache Misses:  10
+Cache Miss Rate: 1.000
+Cache Hit Rate:  0.000

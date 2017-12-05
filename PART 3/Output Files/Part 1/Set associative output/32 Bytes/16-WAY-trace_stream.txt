@@ -1,0 +1,7 @@
+===============================================
+Cache type:    Set-Associative-Mapped Cache
+=================================================
+Cache Hits:    983291
+Cache Misses:  2250764
+Hit Rate:  0.304
+Miss Rate: 0.696
