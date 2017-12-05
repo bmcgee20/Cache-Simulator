@@ -13,7 +13,25 @@
 #include <time.h>
 #include <stdlib.h>
 #include "cachesim.h"
-
+/*
+ * DOCUMENTATION:
+ * 		Author: Jarrod McGee
+ *
+ * 		Directions:
+ * 			Fully associative cache:  Just use the word fully in the command line as so
+ * 					./cachesim fully ./trace_for_students/trace.stream
+ * 			Set associative cache: Just use the word set in the command line as so
+ * 					./cachesim set ./trace_for_students/trace.stream
+ * 			How to use the makefile: Open the command line in the folder of the makefile and just type make, it will
+ * 								compile the executable.
+ * 			Where to find things in this code: (Subject to some changes)
+ * 				Fully associative functionality: Line 69-76 (Init), 148 (get string arg),260 (functionality)
+ * 				Set associative functionality: Line 116 (get string args/ report), 69-76 (Init),  260 (functionality)
+ * 				PLRU code: Line 350 (main functionality), 488-end (binary tree set up)
+ * 				RR functionality: Line 457 (all funcionality)
+ *
+ *
+ */
 int main(int argc, char *argv[])
 {
     if (argc != 3) {
@@ -340,12 +358,7 @@ void set_mapped_cache_access(struct set_associative_cache *cache, uint64_t addre
     			//0 means go left to find PLRU canidate
     		//in case of miss start at root not and compare flags to find it
     	//create an array of binary trees, one for each set and initialize them
-    	/*
-    	 *
-    	 *
-    	 *
-    	 *
-    	 */
+
     	//Check if it is a hit in the set
         for(i=0; i<=(NUM_BLOCKS/NUM_SETS); i++){
         	if(cache->tag_field[SetIndex][i]== tagNum && cache->valid_field[SetIndex][i]==1){
@@ -489,6 +502,7 @@ node *CreateNodes(node *parent, tree *root){
 	return noder;
 }
 
+//fill out the tree will nodes to create the PLRU tree
 node *FillTree(tree *birch,node *noder, int currentDepth, int maxDepth){
 	//just return the root now
 	printf("occuring    current: %d  max: %d\n", currentDepth, maxDepth);

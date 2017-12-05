@@ -1,0 +1,6 @@
+./cachesim direct ./trace_for_students/trace.stream_10
+./cachesim set ./trace_for_students/trace.stream_10
+gcc cachesim.c -o cachesim
+
+
+0   111 000 000    00 00 00

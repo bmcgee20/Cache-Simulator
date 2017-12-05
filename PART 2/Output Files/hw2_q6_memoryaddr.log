@@ -1,0 +1,50 @@
+BLOCK SIZE = 64 Bytes
+1-WAY
+CACHE SIZE = 32768 Bytes
+NUMBER OF BLOCKS = 512
+NUMBER OF SETS = 512
+
+0000000c
+ converted to 12
+Memory address: 12, Block address: 0, Index: 0, Tag: 0 Miss!
+000002d0
+ converted to 720
+Memory address: 720, Block address: 11, Index: 11, Tag: 0 Miss!
+000000ac
+ converted to 172
+Memory address: 172, Block address: 2, Index: 2, Tag: 0 Miss!
+00000008
+ converted to 8
+Memory address: 8, Block address: 0, Index: 0, Tag: 0 Hit!
+000002fc
+ converted to 764
+Memory address: 764, Block address: 11, Index: 11, Tag: 0 Hit!
+00000160
+ converted to 352
+Memory address: 352, Block address: 5, Index: 5, Tag: 0 Miss!
+000002f8
+ converted to 760
+Memory address: 760, Block address: 11, Index: 11, Tag: 0 Hit!
+00000038
+ converted to 56
+Memory address: 56, Block address: 0, Index: 0, Tag: 0 Hit!
+000002d4
+ converted to 724
+Memory address: 724, Block address: 11, Index: 11, Tag: 0 Hit!
+000000b0
+ converted to 176
+Memory address: 176, Block address: 2, Index: 2, Tag: 0 Hit!
+000002e8
+ converted to 744
+Memory address: 744, Block address: 11, Index: 11, Tag: 0 Hit!
+000003f4
+ converted to 1012
+Memory address: 1012, Block address: 15, Index: 15, Tag: 0 Miss!
+
+==================================
+Cache type:    Direct-Mapped Cache
+==================================
+Cache Hits:    7
+Cache Misses:  5
+Hit Rate:  0.583
+Miss Rate: 0.417
